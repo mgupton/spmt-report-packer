@@ -18,11 +18,17 @@
 # site it corresponds to.
 
 $jobs = @{}
+$dirs = ls -Directory
 
-ls -Directory | foreach {
-    $rpt = "$_\Report"
+foreach ($dir in $dirs) {
+    $rpt = "$dir\Report"
+
+    if (!(Test-Path "$rpt\SummaryReport.csv")) {
+        continue
+    }
+
     $summary = import-csv "$rpt\SummaryReport.csv"
-    $id = split-path -leaf $_
+    $id = split-path -leaf $dir
 
     $summary | foreach {
         $lastrun = [datetime]::parseexact($_."Start time", 'M/d/yyyy h:m:s tt', $null)
@@ -36,7 +42,7 @@ ls -Directory | foreach {
             lastrun = $lastrun
         }
 
-        if ($jobs.Keys -notcontains $job.src) {
+        if ($jobs.Keys -notcontains $job.src) {s
             $jobs[$job.src] = $job
 
         }
@@ -48,7 +54,8 @@ ls -Directory | foreach {
     }
 }
 
- foreach ($job in $jobs.GetEnumerator()) {
+
+foreach ($job in $jobs.GetEnumerator()) {
     $job = $job | select -ExpandProperty value
     write-host "$env:TEMP\$($job.sitename)_$($job.id)"
     Compress-Archive -Force -Path $job.rpt -DestinationPath "$env:TEMP\$($job.sitename)_$($job.id)"
