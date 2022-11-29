@@ -17,8 +17,12 @@
 # zips up the report subdirectory and gives it a name that identifies the
 # site it corresponds to.
 
+param(
+    [Parameter(Mandatory=$true)] [String]$report_folder
+)
+
 $jobs = @{}
-$dirs = ls -Directory
+$dirs = ls -Directory $report_folder
 
 foreach ($dir in $dirs) {
     $rpt = "$dir\Report"
@@ -42,7 +46,7 @@ foreach ($dir in $dirs) {
             lastrun = $lastrun
         }
 
-        if ($jobs.Keys -notcontains $job.src) {s
+        if ($jobs.Keys -notcontains $job.src) {
             $jobs[$job.src] = $job
 
         }
