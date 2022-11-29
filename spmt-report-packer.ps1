@@ -27,11 +27,11 @@ $dirs = ls -Directory $report_folder
 foreach ($dir in $dirs) {
     $rpt = "$dir\Report"
 
-    if (!(Test-Path "$rpt\SummaryReport.csv")) {
+    if (!(Test-Path "$report_folder\$rpt\SummaryReport.csv")) {
         continue
     }
 
-    $summary = import-csv "$rpt\SummaryReport.csv"
+    $summary = import-csv "$report_folder\$rpt\SummaryReport.csv"
     $id = split-path -leaf $dir
 
     $summary | foreach {
@@ -61,6 +61,6 @@ foreach ($dir in $dirs) {
 
 foreach ($job in $jobs.GetEnumerator()) {
     $job = $job | select -ExpandProperty value
-    write-host "$env:TEMP\$($job.sitename)_$($job.id)"
-    Compress-Archive -Force -Path $job.rpt -DestinationPath "$env:TEMP\$($job.sitename)_$($job.id)"
+    write-host "$env:TEMP\$($job.sitename)_$($job.id)"$report_folder\
+    Compress-Archive -Force -Path "$report_folder\$($job.rpt)" -DestinationPath "$env:TEMP\$($job.sitename)_$($job.id)"
 }
